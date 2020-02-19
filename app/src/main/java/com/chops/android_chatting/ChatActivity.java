@@ -6,9 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,15 +21,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Hashtable;
-import java.util.List;
+
 
 public class ChatActivity extends AppCompatActivity {
 
-    private RecyclerAdapter adapter;
+
 
     //로그인 이메일아이디
     private String mstrEmail;
@@ -39,20 +35,48 @@ public class ChatActivity extends AppCompatActivity {
     //파이어베이스 데이터베이스
     FirebaseDatabase mDatabase;
 
+    //리사이클러뷰 어댑터
+    private RecyclerAdapter mrcAdapter;
+
+    //리사이클러뷰 메인 채팅 뷰
+    RecyclerView mRecyclerView;
+
+    //입력
+    EditText metInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        mfnInitVariable();
+        mfnListener();
+    }
+
+
+    //객체 및 변수 초기화
+    private void mfnInitVariable()
+    {
         //파이어베이스 인스턴스 초기화.
         mDatabase = FirebaseDatabase.getInstance();
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             mstrEmail = user.getEmail();
         }
 
+        //리사이클러뷰 초기화
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mrcAdapter = new RecyclerAdapter(mstrEmail);
+        mRecyclerView.setAdapter(mrcAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        metInput = (EditText)findViewById(R.id.etInput);
+    }
+
+    private void mfnListener()
+    {
+        //Finish 버튼 클릭
         Button btnFinish = (Button)findViewById(R.id.btnFinish);
         btnFinish.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,17 +85,12 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        final EditText etInput = (EditText)findViewById(R.id.etInput);
+        //보내기 버튼
         Button btnSend = (Button)findViewById(R.id.btnSend);
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String strText = etInput.getText().toString();
+                String strText = metInput.getText().toString();
 
                 if(strText.equals(""))
                 {
@@ -89,14 +108,12 @@ public class ChatActivity extends AppCompatActivity {
                     htChat.put("email", mstrEmail);
                     htChat.put("text", strText);
                     dr.setValue(htChat);
+
+                    metInput.setText("");
                 }
             }
         });
 
-        adapter = new RecyclerAdapter();
-        recyclerView.setAdapter(adapter);
-
-        //getData();
 
         //데이터베이스 리스너
         DatabaseReference dr = mDatabase.getReference("chat");
@@ -114,8 +131,9 @@ public class ChatActivity extends AppCompatActivity {
 
                  */
                 Data chat = dataSnapshot.getValue(Data.class);
-                adapter.addItem(chat);
-                adapter.notifyDataSetChanged();
+                mrcAdapter.addItem(chat);
+                mrcAdapter.notifyDataSetChanged();
+                mRecyclerView.scrollToPosition(mrcAdapter.getItemCount()-1);
 
             }
 
@@ -141,6 +159,8 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
+
+
 
 /*
     private void getData() {

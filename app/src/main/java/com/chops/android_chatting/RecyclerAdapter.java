@@ -15,15 +15,39 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemVi
 
     // adapter에 들어갈 list 입니다.
     private ArrayList<Data> listData = new ArrayList<>();
+    private String mstrEmail = "";
 
+    public RecyclerAdapter(String p_strEmail)
+    {
+        mstrEmail = p_strEmail;
+    }
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // LayoutInflater를 이용하여 전 단계에서 만들었던 item.xml을 inflate 시킵니다.
         // return 인자는 ViewHolder 입니다.
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false);
+        View view;
+        if (viewType == 0) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_left, parent, false);
+        }
+        else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_right, parent, false);
+        }
         return new ItemViewHolder(view);
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        if(mstrEmail.equals(listData.get(position).email))
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     @Override
