@@ -2,14 +2,14 @@ package com.chops.android_chatting;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     EditText metEmail;
     EditText metPassword;
+
+    ProgressBar pbLogin;
 
     //파이어베이스 인증 관련
     private FirebaseAuth mAuth;
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         metEmail = (EditText)findViewById(R.id.etEmail);
         metPassword = (EditText)findViewById(R.id.etEmail);
-
+        pbLogin = (ProgressBar)findViewById(R.id.pbLogin);
 
         Button btnRegister = (Button)findViewById(R.id.btnRegister);
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -100,11 +102,14 @@ public class MainActivity extends AppCompatActivity {
     //로그인
     private void mfnUserLogin(String p_strEmail, String p_strPassword)
     {
+        pbLogin.setVisibility(View.VISIBLE);
+
         mAuth.signInWithEmailAndPassword(p_strEmail, p_strPassword)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            pbLogin.setVisibility(View.GONE);
                             // Sign in success, update UI with the signed-in user's information
                             //Log.d(TAG, "signInWithEmail:success");
                             Toast.makeText( MainActivity.this, "Authentication success.",
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(in);
 
                         } else {
+                            pbLogin.setVisibility(View.GONE);
                             // If sign in fails, display a message to the user.
                             //Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.",
