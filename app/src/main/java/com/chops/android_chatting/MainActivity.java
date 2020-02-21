@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             //Log.d(TAG, "createUserWithEmail:success");
-                            Toast.makeText( MainActivity.this, "Authentication success.",
+                            Toast.makeText( MainActivity.this, "등록 완료",
                                     Toast.LENGTH_SHORT).show();
 
                             FirebaseUser user = mAuth.getCurrentUser();
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             //Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText( MainActivity.this, "Authentication failed.",
+                            Toast.makeText( MainActivity.this, "등록 실패",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
@@ -144,8 +144,10 @@ public class MainActivity extends AppCompatActivity {
                             updateUI(user);
 
                             //성공 시, 뷰 전환.
-                            Intent in = new Intent(MainActivity.this, ChatActivity.class);
+                            Intent in = new Intent(MainActivity.this, tabChatMain.class);
+                            in.putExtra("Email", metEmail.getText().toString());
                             startActivity(in);
+                            finish();
 
                         } else {
                             pbLogin.setVisibility(View.GONE);

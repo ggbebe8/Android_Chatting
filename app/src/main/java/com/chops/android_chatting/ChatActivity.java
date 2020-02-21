@@ -120,16 +120,7 @@ public class ChatActivity extends AppCompatActivity {
         dr.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                /*
-                // A new comment has been added, add it to the displayed list
-                Data data = dataSnapshot.getValue(Data.class);
 
-                // [START_EXCLUDE]
-                // Update RecyclerView
-                mChat.add(data);
-                adapter.notifyItemInserted(mChat.size() - 1);
-
-                 */
                 Data chat = dataSnapshot.getValue(Data.class);
                 mrcAdapter.addItem(chat);
                 mrcAdapter.notifyDataSetChanged();
