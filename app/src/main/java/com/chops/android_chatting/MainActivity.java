@@ -16,6 +16,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Hashtable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     ProgressBar pbLogin;
 
+    //파이어베이스 데이터베이스
+    FirebaseDatabase mDatabase;
     //파이어베이스 인증 관련
     private FirebaseAuth mAuth;
 
@@ -38,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     //변수 및 객체 초기화
     private void mfnInitVariable()
     {
+        //파이어베이스 데이터베이스
+        mDatabase = FirebaseDatabase.getInstance();
         //파이어베이스 인증 초기화
         mAuth = FirebaseAuth.getInstance();
         //textview 이메일
@@ -87,13 +95,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     //유저등록
-    private void mfnRegisterUser(String p_strEmail, String p_strPassword)
+    private void mfnRegisterUser(final String p_strEmail, String p_strPassword)
     {
         //예외처리
-        if(metEmail.getText().toString().equals("") )
-            Toast.makeText(this, "이메일을 입력해주세요.",Toast.LENGTH_LONG).show();
-        else if (metPassword.getText().toString().equals(""))
-            Toast.makeText(this, "패스워드를 입력해주세요.",Toast.LENGTH_LONG).show();
+        if(metEmail.getText().toString().equals("") || metEmail.getText() == null) {
+            Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        else if (metPassword.getText().toString().equals("") || metPassword.getText() == null) {
+            Toast.makeText(this, "패스워드를 입력해주세요.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         //등록
         mAuth.createUserWithEmailAndPassword(p_strEmail, p_strPassword)
@@ -105,6 +117,16 @@ public class MainActivity extends AppCompatActivity {
                             //Log.d(TAG, "createUserWithEmail:success");
                             Toast.makeText( MainActivity.this, "등록 완료",
                                     Toast.LENGTH_SHORT).show();
+                            //파이어베이스 데이터베이스에 넣기.
+                            DatabaseReference dr = mDatabase.getReference("profile").child(p_strEmail.replace(".","!,!"));
+                            String val = "id";
+                            dr.setValue(val);
+                            /*
+                            Hashtable<String, String> htChat = new Hashtable<String, String>();
+                            htChat.put(p_strEmail.replace(".","!,!"), "id");
+                            dr.setValue(htChat);
+
+                             */
 
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
@@ -123,10 +145,14 @@ public class MainActivity extends AppCompatActivity {
     private void mfnUserLogin(String p_strEmail, String p_strPassword)
     {
         //예외처리
-        if(metEmail.getText().toString().equals("") )
-            Toast.makeText(this, "이메일을 입력해주세요.",Toast.LENGTH_LONG).show();
-        else if (metPassword.getText().toString().equals(""))
-            Toast.makeText(this, "패스워드를 입력해주세요.",Toast.LENGTH_LONG).show();
+        if(metEmail.getText().toString().equals("") || metEmail.getText() == null) {
+            Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        else if (metPassword.getText().toString().equals("") || metPassword.getText() == null) {
+            Toast.makeText(this, "패스워드를 입력해주세요.", Toast.LENGTH_LONG).show();
+            return;
+        }
         pbLogin.setVisibility(View.VISIBLE);
 
         //로그인 인증
@@ -138,8 +164,7 @@ public class MainActivity extends AppCompatActivity {
                             pbLogin.setVisibility(View.GONE);
                             // Sign in success, update UI with the signed-in user's information
                             //Log.d(TAG, "signInWithEmail:success");
-                            Toast.makeText( MainActivity.this, "로그인 성공",
-                                    Toast.LENGTH_SHORT).show();
+                            //Toast.makeText( MainActivity.this, "로그인 성공",Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
 

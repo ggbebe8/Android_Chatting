@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="250dp"
+    android:layout_height="150dp"
+    tools:context=".add_friend"
+    android:background="#ffffff">
+    <TextView
+        android:text="친구추가"
+        android:textSize="20sp"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:background="#ff7a00"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="추가할 이메일 : "
+        android:layout_centerInParent="true"
+        android:id="@+id/tvAddFriend"
+        android:layout_above="@+id/etAddFriend"
+        />
+    <EditText
+        android:id="@+id/etAddFriend"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:gravity="center"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etAddFriend"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:text="추가"
+        android:id="@+id/btnAddFriend"
+        android:layout_below="@id/etAddFriend"
+        />
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:text="닫기"
+        android:id="@+id/btnClose"
+        android:layout_below="@id/etAddFriend"
+        />
+    </LinearLayout>
+
+</RelativeLayout>

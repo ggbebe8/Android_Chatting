@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/chat_bubble"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <ImageView
+            android:id="@+id/ivFriendProfile"
+            android:layout_margin="3dp"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/img_android"
+            />
+        <TextView
+            android:id="@+id/tvFriendEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="10dp"
+            android:text="Aiden@naver.com"
+            android:layout_weight="10"
+            android:singleLine="true"
+            />
+        <Button
+            android:id="@+id/btnFriendChat"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginRight="15dp"
+            android:text="대 화"
+            android:textSize="10sp"
+            />
+
+    </LinearLayout>
+</LinearLayout>
