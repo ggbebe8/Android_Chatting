@@ -1,7 +1,5 @@
 package com.chops.android_chatting;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +7,16 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.Hashtable;
+import androidx.annotation.NonNull;
+
 
 public class add_friend extends Activity {
 
@@ -73,16 +76,68 @@ public class add_friend extends Activity {
 
     private void mfnAddFriend()
     {
+        if (mstrEmail.equals(metAddFriend.getText().toString()))
+        {
+            Toast.makeText(getApplicationContext(),"자신의 아이디는 추가할 수 없습니다.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         //파이어베이스 데이터베이스에 넣기.
         //DatabaseReference dr = mDatabase.getReference("profile/" + mstrEmail.replace(".","!,!") + "/friends");
-        DatabaseReference dr;
+        final DatabaseReference dr;
 
-        dr = mDatabase.getReference("profile").child(mstrEmail.replace(".","!,!")).child("friends").child(metAddFriend.getText().toString().replace(".","!,!"));
-        String val = "id";
+        dr = mDatabase.getReference("profile");//.child(metAddFriend.getText().toString().replace(".","!,!"));
+
+        dr.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String strFriendModifiedEmail = metAddFriend.getText().toString().replace(".","!,!");
+                String strMyModifiedEmail = mstrEmail.replace(".","!,!");
+
+                //예외처리
+                for (DataSnapshot ds : dataSnapshot.child(strMyModifiedEmail).child("friends").getChildren())
+                {
+                    if( strFriendModifiedEmail.equals(ds.getKey()))
+                    {
+                        Toast.makeText(getApplicationContext(),"이미 등록되어있습니다.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
+                for(DataSnapshot ds : dataSnapshot.getChildren())
+                {
+                    if( strFriendModifiedEmail.equals(ds.getKey()))
+                    {
+                        dr.child(strMyModifiedEmail)
+                                .child("friends")
+                                .child(strFriendModifiedEmail)
+                                .setValue(strMyModifiedEmail+ "|" +strFriendModifiedEmail);
+
+                        dr.child(strFriendModifiedEmail)
+                                .child("friends")
+                                .child(strMyModifiedEmail)
+                                .setValue(strMyModifiedEmail+ "|" +strFriendModifiedEmail);
+
+                        finish();
+                        return;
+                    }
+                }
+
+                Toast.makeText(getApplicationContext(), "친구 아이디가 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
         /*
         Hashtable<String, String> htChat = new Hashtable<String, String>();
         htChat.put(metAddFriend.getText().toString().replace(".","!,!"), "id");
          */
-        dr.setValue(val);
+
     }
 }

@@ -3,6 +3,7 @@ package com.chops.android_chatting;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,8 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RecyclerAdapter_Friends extends RecyclerView.Adapter<RecyclerAdapter_Friends.ItemViewHolder> {
 
     // adapter에 들어갈 list 입니다.
-    private ArrayList<Data_Friends> listData = new ArrayList<>();
+    public ArrayList<Data_Friends> listData = new ArrayList<>();
 
+    //커스텀 리스너 만들기 (객체마다 클릭 이벤트를 주기 위함)
+    public interface OnItemClickListener{
+        void onItemClick(View v, int pos);
+    }
+
+    private OnItemClickListener mListener = null;
+
+    public void setOnItemClickListener(OnItemClickListener listener)
+    {
+        this.mListener = listener;
+    }
 
     @NonNull
     @Override
@@ -25,6 +37,8 @@ public class RecyclerAdapter_Friends extends RecyclerView.Adapter<RecyclerAdapte
         View view;
 
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_friendlist, parent, false);
+
+
 
         return new ItemViewHolder(view);
     }
@@ -53,12 +67,41 @@ public class RecyclerAdapter_Friends extends RecyclerView.Adapter<RecyclerAdapte
 
         private ImageView ivFriendProfile;
         private TextView tvFriendEmail;
+        private Button btnFriendChat;
 
         ItemViewHolder(View itemView) {
             super(itemView);
 
             ivFriendProfile = itemView.findViewById(R.id.ivFriendProfile);
             tvFriendEmail = itemView.findViewById(R.id.tvFriendEmail);
+            btnFriendChat = itemView.findViewById(R.id.btnFriendChat);
+
+            btnFriendChat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int ipos = getAdapterPosition();
+                    if (ipos != RecyclerView.NO_POSITION)
+                    {
+                        mListener.onItemClick(v, ipos);
+                        //String strEmail = listData.get(ipos).mstrFriendEmail;
+                    }
+                }
+            });
+
+            /*
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int ipos = getAdapterPosition();
+                    if (ipos != RecyclerView.NO_POSITION)
+                    {
+                        mListener.onItemClick(v, ipos);
+                        //String strEmail = listData.get(ipos).mstrFriendEmail;
+                    }
+                }
+            });
+
+             */
         }
 
         void onBind(Data_Friends data) {

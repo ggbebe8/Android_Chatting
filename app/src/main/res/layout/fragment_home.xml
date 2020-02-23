@@ -15,7 +15,7 @@
         android:layout_marginEnd="8dp"
         android:textAlignment="center"
         android:textSize="55sp"
-        android:text="Welcom to Android Chat"
+        android:text="Welcome to Android Chat"
         android:textColor="#ffffff"
         android:textStyle="bold"/>
 

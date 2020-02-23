@@ -11,8 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".add_friend"
-                  android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".Register"></activity>
+        <activity
+            android:name=".add_friend"
+            android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".tabChatMain"
             android:label="@string/title_activity_tab_chat_main" />

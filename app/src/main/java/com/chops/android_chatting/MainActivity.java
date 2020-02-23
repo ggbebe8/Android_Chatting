@@ -19,6 +19,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Hashtable;
 
 public class MainActivity extends AppCompatActivity {
@@ -76,6 +78,16 @@ public class MainActivity extends AppCompatActivity {
                 mfnUserLogin(metEmail.getText().toString(), metPassword.getText().toString());
             }
         });
+
+        //취소 버튼
+        Button btnCancel = (Button)findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                metEmail.setText("");
+                metPassword.setText("");
+            }
+        });
     }
 
     @Override
@@ -118,9 +130,10 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText( MainActivity.this, "등록 완료",
                                     Toast.LENGTH_SHORT).show();
                             //파이어베이스 데이터베이스에 넣기.
-                            DatabaseReference dr = mDatabase.getReference("profile").child(p_strEmail.replace(".","!,!"));
-                            String val = "id";
-                            dr.setValue(val);
+                            DatabaseReference dr = mDatabase.getReference("profile").child(p_strEmail.replace(".","!,!")).child("add_date");
+                            Calendar c = Calendar.getInstance();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            dr.setValue(sdf.format(c.getTime()));
                             /*
                             Hashtable<String, String> htChat = new Hashtable<String, String>();
                             htChat.put(p_strEmail.replace(".","!,!"), "id");

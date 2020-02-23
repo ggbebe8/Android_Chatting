@@ -5,6 +5,16 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
 
+    <ImageView
+        android:id="@+id/imgBack"
+        android:layout_width="20dp"
+        android:layout_height="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/img_leftarrow"
+        />
+    <!--
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,13 +22,13 @@
         android:text="finish"
         android:id="@+id/btnFinish"
         />
-
+    -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/btnFinish"
+        android:layout_below="@+id/imgBack"
         android:layout_above="@+id/etInput"
         />
 

@@ -18,11 +18,14 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chops.android_chatting.ChatActivity;
 import com.chops.android_chatting.Data;
 import com.chops.android_chatting.Data_Friends;
+import com.chops.android_chatting.MainActivity;
 import com.chops.android_chatting.R;
 import com.chops.android_chatting.RecyclerAdapter;
 import com.chops.android_chatting.RecyclerAdapter_Friends;
+import com.chops.android_chatting.tabChatMain;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +35,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -93,6 +97,32 @@ public class FriendsFragment extends Fragment {
 
     private void mfnListener()
     {
+        //리사이클러뷰의 대화 버튼 클릭이벤트
+        mrcAdapter.setOnItemClickListener(new RecyclerAdapter_Friends.OnItemClickListener() {
+            @Override
+            public void onItemClick(final View v, final int pos) {
+
+                DatabaseReference drGetFriendChatKey = mDatabase.getReference("profile").child( mstrEmail.replace(".","!,!")).child("friends").child( mrcAdapter.listData.get(pos).mstrFriendEmail.replace(".","!,!"));
+
+                drGetFriendChatKey.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String strChatKey = dataSnapshot.getValue().toString();
+                        //성공 시, 뷰 전환.
+                        Intent in = new Intent(v.getContext(), ChatActivity.class);
+                        in.putExtra("ChatKey", strChatKey);
+                        startActivity(in);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
+
         //친구추가 클릭
         mivAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,8 +134,8 @@ public class FriendsFragment extends Fragment {
         });
 
         //데이터베이스 리스너
-        DatabaseReference dr = mDatabase.getReference("profile/" + mstrEmail.replace(".","!,!") + "/friends");
-        dr.addChildEventListener(new ChildEventListener() {
+        DatabaseReference drFriendList = mDatabase.getReference("profile/" + mstrEmail.replace(".","!,!") + "/friends");
+        drFriendList.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 String strKey = dataSnapshot.getKey() == null ? "" : dataSnapshot.getKey().replace("!,!",".");

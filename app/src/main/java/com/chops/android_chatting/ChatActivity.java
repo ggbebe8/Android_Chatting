@@ -6,10 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +33,9 @@ public class ChatActivity extends AppCompatActivity {
 
     //로그인 이메일아이디
     private String mstrEmail;
+
+    //친구 이메일아이디
+    private String mstrChatKey;
 
     //파이어베이스 데이터베이스
     FirebaseDatabase mDatabase;
@@ -57,6 +62,11 @@ public class ChatActivity extends AppCompatActivity {
     //객체 및 변수 초기화
     private void mfnInitVariable()
     {
+        //인텐트 받기
+        Intent it = getIntent();
+        //친구 이메일 초기화
+        mstrChatKey = it.getExtras().getString("ChatKey");
+
         //파이어베이스 인스턴스 초기화.
         mDatabase = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -76,14 +86,16 @@ public class ChatActivity extends AppCompatActivity {
 
     private void mfnListener()
     {
-        //Finish 버튼 클릭
-        Button btnFinish = (Button)findViewById(R.id.btnFinish);
-        btnFinish.setOnClickListener(new View.OnClickListener() {
+
+        //Back 버튼 클릭
+        ImageView imgBack = (ImageView) findViewById(R.id.imgBack);
+        imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
 
         //보내기 버튼
         Button btnSend = (Button)findViewById(R.id.btnSend);
@@ -103,7 +115,7 @@ public class ChatActivity extends AppCompatActivity {
                     String strCurrentDate = sdf.format(c.getTime());
 
                     //파이어베이스 데이터베이스에 넣기.
-                    DatabaseReference dr = mDatabase.getReference("chat").child(strCurrentDate);
+                    DatabaseReference dr = mDatabase.getReference("chat").child(mstrChatKey).child(strCurrentDate);
                     Hashtable<String, String> htChat = new Hashtable<String, String>();
                     htChat.put("email", mstrEmail);
                     htChat.put("text", strText);
@@ -116,7 +128,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
         //데이터베이스 리스너
-        DatabaseReference dr = mDatabase.getReference("chat");
+        DatabaseReference dr = mDatabase.getReference("chat").child(mstrChatKey);
         dr.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
