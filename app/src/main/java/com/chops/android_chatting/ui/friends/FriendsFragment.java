@@ -73,6 +73,8 @@ public class FriendsFragment extends Fragment {
         mfnInitVariable();
         mfnListener();
 
+        //친구리스트 가져오기
+        //mfnReadFriendList();
         return v;
     }
 
@@ -93,10 +95,12 @@ public class FriendsFragment extends Fragment {
 
         //친구추가
         mivAddFriend = (ImageView)v.findViewById(R.id.ivAddFriend);
+
     }
 
     private void mfnListener()
     {
+
         //리사이클러뷰의 대화 버튼 클릭이벤트
         mrcAdapter.setOnItemClickListener(new RecyclerAdapter_Friends.OnItemClickListener() {
             @Override
@@ -130,17 +134,25 @@ public class FriendsFragment extends Fragment {
                 Intent in = new Intent(v.getContext(), com.chops.android_chatting.add_friend.class);
                 in.putExtra("Email", mstrEmail);
                 startActivity(in);
+                //mrcAdapter.listData.clear();
+                //mfnReadFriendList();
             }
         });
+
 
         //데이터베이스 리스너
         DatabaseReference drFriendList = mDatabase.getReference("profile/" + mstrEmail.replace(".","!,!") + "/friends");
         drFriendList.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String strKey = dataSnapshot.getKey() == null ? "" : dataSnapshot.getKey().replace("!,!",".");
+                String strEmail = dataSnapshot.getKey() == null ? "" : dataSnapshot.getKey().replace("!,!",".");
                 try {
-                    mfnDownImage(strKey);
+                    Data_Friends dfFriends = new Data_Friends();
+                    dfFriends.mstrFriendEmail = strEmail;
+                    mrcAdapter.addItem(dfFriends);
+                    mrcAdapter.notifyDataSetChanged();
+
+                    mfnDownImage(strEmail,mrcAdapter.listData.size()-1);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -167,11 +179,47 @@ public class FriendsFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+
+
+    }
+
+    //친구 리스트 가져오기
+    private void mfnReadFriendList()
+    {
+        DatabaseReference drFriendList = mDatabase.getReference("profile/" + mstrEmail.replace(".","!,!") + "/friends");
+        drFriendList.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int i = 0;
+                for(DataSnapshot ds : dataSnapshot.getChildren())
+                {
+                    String strEmail = ds.getKey() == null ? "" : ds.getKey().replace("!,!",".");
+                    try {
+                        Data_Friends dfFriends = new Data_Friends();
+                        dfFriends.mstrFriendEmail = strEmail;
+                        mrcAdapter.addItem(dfFriends);
+                        mrcAdapter.notifyDataSetChanged();
+
+                        //늦게 로딩되는 이미지는 나중에.
+                        mfnDownImage(strEmail, i);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    i++;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
+
     //프로필 이미지를 서버에서 가져옴
-    private void mfnDownImage(final String p_strEmail) throws IOException {
+    private void mfnDownImage(final String p_strEmail, final int p_iCount) throws IOException {
         final File localFile = File.createTempFile(p_strEmail, "jpg");
 
         mStorageRef.child("chat_image/" + p_strEmail + "/profile.jpg").getFile(localFile)
@@ -181,7 +229,8 @@ public class FriendsFragment extends Fragment {
                         Data_Friends dfFriends = new Data_Friends();
                         dfFriends.mstrFriendEmail = p_strEmail;
                         dfFriends.mbitFriendProfile = BitmapFactory.decodeFile(localFile.getPath());
-                        mrcAdapter.addItem(dfFriends);
+
+                        mrcAdapter.listData.set(p_iCount, dfFriends);
                         mrcAdapter.notifyDataSetChanged();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -190,7 +239,7 @@ public class FriendsFragment extends Fragment {
                 Data_Friends dfFriends = new Data_Friends();
                 dfFriends.mstrFriendEmail = p_strEmail;
                 dfFriends.mbitFriendProfile = null;
-                mrcAdapter.addItem(dfFriends);
+                mrcAdapter.listData.set(p_iCount, dfFriends);
                 mrcAdapter.notifyDataSetChanged();
             }
         });

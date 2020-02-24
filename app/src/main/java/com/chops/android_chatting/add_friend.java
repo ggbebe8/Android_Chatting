@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,6 +34,11 @@ public class add_friend extends Activity {
     String mstrEmail = "";
 
     EditText metAddFriend;
+
+    //et의 키보드를 내리자.
+    View.OnFocusChangeListener mliKeyboardDown;
+    //키보드 컨트롤
+    InputMethodManager mIMM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,24 @@ public class add_friend extends Activity {
                 finish();
             }
         });
+
+        //키보드 내리자.
+        mIMM = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        mliKeyboardDown = new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View view, boolean bFocus) {
+                if(!bFocus && !(getCurrentFocus() instanceof EditText))
+                {
+                    mIMM.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                else
+                {
+                    mIMM.showSoftInput(view,0);
+                }
+            }
+        };
+        metAddFriend.setOnFocusChangeListener(mliKeyboardDown);
     }
 
     private void mfnAddFriend()

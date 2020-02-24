@@ -4,7 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="#4169E1">
+    android:background="#4169E1"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    >
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -31,6 +35,8 @@
             android:layout_marginBottom="3dp"
             android:layout_centerHorizontal="true"
             android:singleLine="true"
+            android:paddingLeft="5dp"
+            android:nextFocusDown="@id/etPassword"
             />
         <EditText
             android:layout_width="200dp"
@@ -43,6 +49,7 @@
             android:layout_centerHorizontal="true"
             android:singleLine="true"
             android:inputType="textPassword"
+            android:paddingLeft="5dp"
             />
 
         <Button
